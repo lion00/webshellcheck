@@ -1,0 +1,60 @@
+import os
+import datetime
+import pyinotify
+import logging
+import re
+class Event(pyinotify.ProcessEvent):
+    def process_IN_CREATE(self, event):
+        print "Creating",event.pathname
+        FileCheck("Creating",event.pathname)
+
+    def process_IN_MODIFY(self, event):
+        print "Modify",event.pathname
+        FileCheck("Modify",event.pathname)
+
+
+
+def FileCheck(ev,filename):
+    match=p_file.search(filename)
+    if match == None:
+        return False
+    e=os.path.exists(filename)
+    if e == False:
+        return False
+
+
+    filecontent=''
+    file=open(filename)
+    while True:
+        lines = file.readlines(100000)
+        if not lines:
+            break
+        for line in lines:
+            filecontent=filecontent+line
+    match = pattern.finditer(filecontent)
+    mlist = list(match)
+    num = len(mlist)
+    if num > 0:
+        print "shell"
+    else:
+        pass
+
+
+
+
+
+pattern=re.compile(r"lion")
+p_file=re.compile(r"\.php$")
+
+
+
+
+
+
+
+wm = pyinotify.WatchManager()
+mask = pyinotify.IN_CREATE | pyinotify.IN_MODIFY 
+handler=Event()
+notifier=pyinotify.Notifier(wm, handler)
+wm.add_watch('/fuck', mask, rec=True)
+notifier.loop()
